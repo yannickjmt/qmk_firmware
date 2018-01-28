@@ -3,13 +3,14 @@
 A few modifications of the default layout, and an additional layer cointaining a numpad
 
 * Add mac media control buttons
-* Remap right Ctrl to Home
+* Remap right ctrl tap to Home
 * Moved arrows in function layer from WASD to ESDF
-* Function layer accessible with hold spacebar
-* Added numpad layer accessible with fn button toggle
+* Function layer accessible right ctrl hold or caps lock hold
+* Added numpad layer accessible with fn btn toggle
 
-TODO : Add email macro. screen cap macro?
-    change function layer access (uncomfortable delay when typing fast)
+TODO : 
+* Add email macro. screen cap macro?
+* find a place for end (double tap right ctrl?)
 * Adding a power (`KC_POWER`) key, so the lock screen shortcut works.
 
 cf maartenwut :
