@@ -8,11 +8,16 @@
 #define _FL 1
 #define _NL 2
 
-#define TAPPING_TOGGLE 2 // 2 taps to toggle layer _NL
+enum {
+  TD_ENG = 0,
+  TD_CTR = 1,
+};
 
 // #define LCTR LT(_FL, TG(_NL)) doesnt work for some reason
-#define RCTRL LT(_FL, KC_HOME)
-#define CPS LT(_FL, KC_CAPS)
+//#define RCTRL LT(_FL, KC_HOME)
+//#define CPS LT(_FL, KC_CAPS)
+#define KC_TD0 TD(TD_ENG)
+#define KC_TD1 TD(TD_CTR)
 #define _______ KC_TRNS
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -22,19 +27,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |----------------------------------------------------------------|
    * |Tab  |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|  [|  ]|  \  |Del |
    * |----------------------------------------------------------------|
-   * |CAPS   |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  '|Return |PgUp|
+   * |CPS/FL |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  '|Return |PgUp|
    * |----------------------------------------------------------------|
    * |Shift   |  Z|  X|  C|  V|  B|  N|  M|  ,|  .|  /|Shift | Up|PgDn|
    * |----------------------------------------------------------------|
-   * |Ctrl|Win |Alt |        Space / _BL    |Alt| FN|Home|Lef|Dow|Rig |
+   * |Ctrl|Win |Alt |        Space          |Alt| FN|Home|Lef|Dow|Rig |
    * `----------------------------------------------------------------'
    */
 [_BL] = KEYMAP_ANSI(
   KC_ESC,    KC_1,   KC_2,   KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,   KC_9,   KC_0, KC_MINS, KC_EQL, KC_BSPC,KC_GRV, \
   KC_TAB,    KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,   KC_Y,   KC_U,   KC_I,   KC_O,   KC_P, KC_LBRC, KC_RBRC,KC_BSLS,KC_DEL, \
-  CPS   ,    KC_A,   KC_S,   KC_D,   KC_F,   KC_G,   KC_H,   KC_J,   KC_K,   KC_L,KC_SCLN, KC_QUOT,         KC_ENT,KC_PGUP,  \
+  TT(_FL),   KC_A,   KC_S,   KC_D,   KC_F,   KC_G,   KC_H,   KC_J,   KC_K,   KC_L,KC_SCLN, KC_QUOT,         KC_ENT,KC_PGUP,  \
   KC_LSFT,   KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,KC_COMM, KC_DOT,KC_SLSH,      KC_RSFT,  KC_UP,   KC_PGDN, \
-  KC_LCTL, KC_LGUI,KC_LALT,                KC_SPC,                        KC_RALT,TG(_NL), RCTRL, KC_LEFT,KC_DOWN,KC_RGHT),
+  KC_TD1, KC_LGUI,KC_LALT,                KC_SPC,                        KC_RALT,TG(_NL), KC_TD0, KC_LEFT,KC_DOWN,KC_RGHT),
 
   /* Keymap _FL: Function Layer
    * ,----------------------------------------------------------------.
@@ -53,7 +58,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, KC_F1 ,  KC_F2,  KC_F3,  KC_F4,   KC_F5,  KC_F6,  KC_F7,  KC_F8,  KC_F9, KC_F10, KC_F11, KC_F12,  KC_DEL, KC_INS ,  \
   _______,_______,_______,  KC_UP,_______, _______,_______,_______,KC_MSTP,_______,_______,_______,_______,  _______,KC_HOME, \
   _______,_______,KC_LEFT,KC_DOWN,KC_RIGHT,_______,_______,KC_MRWD,KC_MPLY,KC_MFFD,_______,_______,          _______,KC_END, \
-  _______,_______,_______, BL_DEC, BL_TOGG, BL_INC,_______,KC_VOLD,KC_VOLU,KC_MUTE,_______,        KC_BTN1, KC_MS_U, KC_BTN2, \
+  _______,_______,BL_BRTG, BL_DEC, BL_TOGG, BL_INC,_______,KC_VOLD,KC_VOLU,KC_MUTE,_______,        KC_BTN1, KC_MS_U, KC_BTN2, \
   _______,_______,_______,                 _______,                        _______,KC_NO  ,_______,KC_MS_L,KC_MS_D, KC_MS_R),
 
   /* Keymap _NL: Numpad Layer
@@ -74,7 +79,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,   KC_4,   KC_5,   KC_6,KC_KP_MINUS,       _______, _______,_______,KC_DEL, \
   KC_NO  ,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,   KC_1,   KC_2,   KC_3, KC_KP_PLUS,       _______,         _______,KC_PGUP,  \
   _______,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,   KC_0,   KC_0, KC_DOT,    _______,             KC_RSFT,  KC_UP,   KC_PGDN, \
-  _______, _______,_______,                _______,                           _______,_______,KC_NO   ,      KC_LEFT,KC_DOWN,KC_RGHT),
+  _______, _______,_______,                _______,                           _______,_______,_______  ,      KC_LEFT,KC_DOWN,KC_RGHT),
 };
 
 
+qk_tap_dance_action_t tap_dance_actions[] = {
+  //Tap once for change track, twice for play
+  [TD_ENG]  = ACTION_TAP_DANCE_DOUBLE(KC_HOME, KC_END),
+  [TD_CTR]  = ACTION_TAP_DANCE_DOUBLE(KC_LCTL, KC_CAPS),
+
+// Other declarations would go here, separated by commas, if you have them
+};
