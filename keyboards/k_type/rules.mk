@@ -40,7 +40,7 @@ MCU_STARTUP = k20x7
 
 # This board was copied from PJRC_TEENSY_3_1. The only difference should be a
 # hack to ensure the watchdog has started before trying to disable it.
-BOARD = K_TYPE_TEENSY_3_1
+BOARD = IC_TEENSY_3_1
 
 # Cortex version
 # Teensy LC is cortex-m0; Teensy 3.x are cortex-m4
@@ -57,6 +57,7 @@ ARMV = 7
 OPT_DEFS =
 
 DFU_ARGS = -d 1c11:b007
+DFU_SUFFIX_ARGS = -p b007 -v 1c11
 
 # Build Options
 #   comment out to disable the options.
