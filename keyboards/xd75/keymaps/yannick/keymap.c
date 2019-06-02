@@ -43,17 +43,13 @@ uint16_t alt_tab_timer = 0;
 #define NAVLAY MO(_NAV)
 #define FRLAY MO(_FR)
 
-// one shot mods for nav layer
-#define N_CTRL OSM(MOD_LGUI) // TODO: MOD_LCTL for windows
+// nav layer
 #define N_SHFT OSM(MOD_LSFT)
 #define N_ALT OSM(MOD_LALT)
-#define N_GUI OSM(MOD_LCTL) // TODO: MOD_LGUI for windows
-#define N_APP OSM(MOD_LCTL)
+// CTRL and WGUI defined in macros as they change according to base layer
 
-#define UNDO_MAC LGUI(KC_Z)
-#define CUT_MAC LGUI(KC_X)
-#define COPY_MC LGUI(KC_C)
-#define PASTE_MC LGUI(KC_V)
+#define NEXTTAB LCTL(KC_TAB)
+#define PREVTAB LSFT(LCTL(KC_TAB))
 
 // French chars
 enum unicode_names {
@@ -75,10 +71,15 @@ void eeconfig_init_user(void) {
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
-  QMKBEST = SAFE_RANGE,
-  QMKURL,
-  NEXTWIN,
-  PREVWIN
+  NEXTWIN = SAFE_RANGE,
+  PREVWIN,
+  N_CTRL,
+  N_GUI,
+  N_APP,
+  N_UNDO,
+  N_CUT,
+  N_COPY,
+  N_PASTE
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -93,7 +94,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------------------------+--------|
  * | LSHIFT | Z      | X      | C      | V      | B      | END    | UP     | PG DN  | N      | M      | ,      | .      | /      |SHFT_APO|
  * |--------+--------+--------+--------+--------+-----------------+--------+--------+--------+--------+-----------------+--------+--------|
- * | LCTRL  | LGUI   | LALT   | SPACE  | ENTER  | LOWER  | LEFT   | DOWN   | RIGHT  | RAISE  | SPACE  | FRENCH | APP    | RALT   | RCTRL  |
+ * | LCTRL  | CMD    | LALT   | SPACE  | ENTER  | LOWER  | LEFT   | DOWN   | RIGHT  | RAISE  | SPACE  | FRENCH | APP    | RALT   | CMD    |
  * '--------------------------------------------------------------------------------------------------------------------------------------'
  */
 
@@ -102,7 +103,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LBRC, KC_BSLS, KC_RBRC, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_DEL,
     FN_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_HOME, KC_DEL,  KC_PGUP, KC_H,    KC_J,    KC_K,    KC_L,    KC_QUOT, KC_ENT,
     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_END,  KC_UP,   KC_PGDN, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SHFT_COL,
-    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC,  KC_ENT,  NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , KC_APP,  KC_RALT, KC_RCTL
+    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC,  KC_ENT,  NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , N_APP,   KC_RALT, KC_LGUI
   ),
 
 /* WIN
@@ -124,7 +125,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,  KC_A,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LBRC, KC_BSLS, KC_RBRC, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_DEL,
     FN_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_HOME, KC_DEL,  KC_PGUP, KC_H,    KC_J,    KC_K,    KC_L,    KC_QUOT, KC_ENT,
     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_END,  KC_UP,   KC_PGDN, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SHFT_COL,
-    KC_LGUI, KC_LCTL, KC_LALT, KC_SPC,  KC_ENT,  NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , KC_APP,  KC_RALT, KC_RCTL
+    KC_LGUI, KC_LCTL, KC_LALT, KC_SPC,  KC_ENT,  NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , N_APP,   KC_RALT, KC_RCTL
   ),
 
 /* FUNCTION
@@ -209,9 +210,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_NAV] = LAYOUT_ortho_5x15(
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
+    _______, _______, _______, _______, N_APP  , _______, _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
     _______, N_GUI  , N_SHFT , N_ALT  , N_CTRL , _______, _______, _______, _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
-    _______,UNDO_MAC, CUT_MAC, COPY_MC,PASTE_MC, _______, _______, _______, _______, PREVWIN, NEXTWIN, _______, _______, _______, _______,
+    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, _______, _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
 
@@ -241,22 +242,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    case QMKBEST:
-      if (record->event.pressed) {
-        // when keycode QMKBEST is pressed
-        SEND_STRING("QMK is the best thing ever!");
-      } else {
-        // when keycode QMKBEST is released
-      }
-      break;
-    case QMKURL:
-      if (record->event.pressed) {
-        // when keycode QMKURL is pressed
-        SEND_STRING("https://qmk.fm/" SS_TAP(X_ENTER));
-      } else {
-        // when keycode QMKURL is released
-      }
-      break;
     case NEXTWIN:
       if (record->event.pressed) {
         if (!is_alt_tab_active) {
@@ -293,6 +278,90 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         register_code16(S(KC_TAB));
       } else {
         unregister_code16(S(KC_TAB));
+      }
+      break;
+    case N_CTRL:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          set_oneshot_mods(MOD_LGUI);
+          break;
+        case _WIN:
+          set_oneshot_mods(MOD_LCTL);
+          break;
+        }
+      }
+      break;
+    case N_GUI:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          set_oneshot_mods(MOD_LCTL);
+          break;
+        case _WIN:
+          set_oneshot_mods(MOD_LGUI);
+          break;
+        }
+      }
+      break;
+    case N_APP:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          tap_code(KC_BTN2);
+          break;
+        case _WIN:
+          tap_code(KC_APP);
+          break;
+        }
+      }
+      break;
+    case N_UNDO:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          SEND_STRING(SS_LGUI("z"));
+          break;
+        case _WIN:
+          SEND_STRING(SS_LCTRL("z"));
+          break;
+        }
+      }
+      break;
+    case N_CUT:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          SEND_STRING(SS_LGUI("x"));
+          break;
+        case _WIN:
+          SEND_STRING(SS_LCTRL("x"));
+          break;
+        }
+      }
+      break;
+    case N_COPY:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          SEND_STRING(SS_LGUI("c"));
+          break;
+        case _WIN:
+          SEND_STRING(SS_LCTRL("c"));
+          break;
+        }
+      }
+      break;
+    case N_PASTE:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          SEND_STRING(SS_LGUI("v"));
+          break;
+        case _WIN:
+          SEND_STRING(SS_LCTRL("v"));
+          break;
+        }
       }
       break;
   }
