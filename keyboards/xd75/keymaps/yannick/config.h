@@ -18,3 +18,5 @@
 
 // place overrides here
 #define TAPPING_TOGGLE 2
+// Key must be released within this many milliseconds to be considered a tap
+#define TAPPING_TERM 200
