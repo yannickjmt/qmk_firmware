@@ -11,9 +11,9 @@ Mac and Windows base layers
 function layer :
 [x] F2-F12 on num row
 [x] !@#$%+^&*() on corresponding letter row
-[x] LED control (to develop)
+[x] LED control
 [x] change default layer
-[ ] email adresses
+
 
 numpad layer :
 [X] numpad on right side
@@ -25,6 +25,11 @@ nav layer :
 [X] one shot mods on left side
     [X] invert one shot mods CTRL/GUI depending on base layer
 [x] alt-tab or cmd-tab macro depending on base layer
+[x] email adresses
+[ ] one tap layer mod?
+[x] Excel shortcut (windows only)
+    [x] ctrl+alt+V V
+    [x] left ctrl+down right ctrl+shift+up ctrl+D
 
 french layer:
 [X] accented chars, some greek and mathematical signs, disposition inspired by qwerty-fry

@@ -163,6 +163,10 @@ enum custom_keycodes {
   N_CUT,
   N_COPY,
   N_PASTE,
+  MAIL,
+  MAILPRO,
+  XCEL_V,
+  XCEL_D
 
 };
 
@@ -206,7 +210,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_WIN] = LAYOUT_ortho_5x15( /* QWERTY WINDOWS */
     KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_MINS, KC_GRV,  KC_EQL,  KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC,
-    KC_TAB,  KC_A,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LBRC, KC_BSLS, KC_RBRC, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_DEL,
+    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LBRC, KC_BSLS, KC_RBRC, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_DEL,
     FN_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_HOME, KC_DEL,  KC_PGUP, KC_H,    KC_J,    KC_K,    KC_L,    KC_QUOT, KC_ENT,
     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_END,  KC_UP,   KC_PGDN, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SHFT_COL,
     KC_LGUI, W_PDESK, KC_LALT, KC_SPC,  KC_ENT,  NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , N_APP,   KC_RALT, W_NDESK
@@ -280,7 +284,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* NAV
  * .--------------------------------------------------------------------------------------------------------------------------------------.
- * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
+ * |        |        | MAIL   |MAILPRO |        |        |        |        |        |        |        |        |        |        |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * |        |        |        |        |        |        |        |        |        |  PgUp  |  Home  |   Up   |   End  |ScrollUp|        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
@@ -293,10 +297,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 
   [_NAV] = LAYOUT_ortho_5x15(
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, _______, N_APP  , _______, _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
+    _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, N_APP  , XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
     _______, N_GUI  , N_SHFT , N_ALT  , N_CTRL , _______, _______, _______, _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
-    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, _______, _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, _______, _______,
+    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
 
@@ -504,24 +508,92 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       }
       break;
+    case MAIL:
+      if (record->event.pressed) {
+        SEND_STRING("mailperso@test.com");
+      }
+      break;
+    case MAILPRO:
+      if (record->event.pressed) {
+        SEND_STRING("mailpro@company.com");
+      }
+      break;
+    case XCEL_V:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          break;
+        case _WIN:
+          SEND_STRING(SS_LCTRL(SS_LALT("v")) "v" SS_TAP(X_ENTER));
+          break;
+        }
+      }
+      break;
+    case XCEL_D:
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          break;
+        case _WIN:
+          // left ctrl+down right ctrl+shift+up ctrl+D
+          SEND_STRING(SS_TAP(X_LEFT) SS_DOWN(X_LCTRL)SS_TAP(X_DOWN)SS_UP(X_LCTRL) SS_TAP(X_RIGHT));
+          SEND_STRING(SS_DOWN(X_LCTRL)SS_DOWN(X_LSHIFT)SS_TAP(X_UP)SS_UP(X_LSHIFT)SS_UP(X_LCTRL) SS_LCTRL("d"));
+          break;
+        }
+      }
+      break;
   }
   return true;
 }
 
+// layer_state_t default_layer_state_set_user(layer_state_t state) {
+//   switch (biton32(default_layer_state)) {
+//   case _MAC:
+//     set_unicode_input_mode(UC_OSX);
+//     rgblight_sethsv_noeeprom_red();
+//     break;
+//   case _WIN:
+//     set_unicode_input_mode(UC_WINC);
+//     rgblight_sethsv_noeeprom_blue();
+//     break;
+//   }
+//   return state;
+// }
+
 uint32_t layer_state_set_user(uint32_t state) {
-  switch (biton32(default_layer_state)) {
-  case _MAC:
-    set_unicode_input_mode(UC_OSX);
+  switch (biton32(state)) {
+  case _FN:
+    rgblight_sethsv_noeeprom_pink();
     break;
-  case _WIN:
-    set_unicode_input_mode(UC_WINC);
+  case _NUM:
+    rgblight_sethsv_noeeprom_orange();
+    break;
+  case _NAV:
+    rgblight_sethsv_noeeprom_springgreen();
+    break;
+  case _FR:
+    rgblight_sethsv_noeeprom_white();
+    break;
+  default: //  for any other layers, or the default layer
+    switch (biton32(default_layer_state)) {
+      case _MAC:
+        rgblight_sethsv_noeeprom_red();
+        set_unicode_input_mode(UC_OSX);
+        break;
+      case _WIN:
+        rgblight_sethsv_noeeprom_blue();
+        set_unicode_input_mode(UC_WINC);
+        break;
+    }
     break;
   }
   return state;
 }
 
 void matrix_init_user(void) {
-
+    rgblight_enable();
+    rgblight_sethsv(0,255,255);
+    rgblight_mode(1);
 }
 
 void matrix_scan_user(void) {
