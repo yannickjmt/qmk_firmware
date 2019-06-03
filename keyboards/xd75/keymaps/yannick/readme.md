@@ -14,8 +14,6 @@ function layer :
 [x] LED control (to develop)
 [x] change default layer
 [ ] email adresses
-[ ] euro sign below dollar
-[ ] thai baht sign ฿
 
 numpad layer :
 [X] numpad on right side
@@ -29,6 +27,6 @@ nav layer :
 [x] alt-tab or cmd-tab macro depending on base layer
 
 french layer:
-[ ] accented chars close to qwerty-fr
+[X] accented chars, some greek and mathematical signs, disposition inspired by qwerty-fry
     needs on MACOS "unicode hex input" as keyboard preference
     needs Wincompose on windows. 
