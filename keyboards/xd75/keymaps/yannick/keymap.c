@@ -510,12 +510,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case MAIL:
       if (record->event.pressed) {
-        SEND_STRING("mailperso@test.com");
+        SEND_STRING("aaaa@gmail.com");
       }
       break;
     case MAILPRO:
       if (record->event.pressed) {
-        SEND_STRING("mailpro@company.com");
+        SEND_STRING("aaaa@bbbb.co");
       }
       break;
     case XCEL_V:
