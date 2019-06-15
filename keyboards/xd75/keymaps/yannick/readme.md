@@ -2,9 +2,9 @@
 
 Mac and Windows base layers
 [x] hold caps lock => function layer
-[X] tap right shift => ;
-[X] tap on leftmost and buttons to change workspace (ctrl left/right on mac, ctrl+win left/right on windows)
-[X] windows base layer 
+[x] tap right shift => ;
+[x] tap on leftmost and buttons to change workspace (ctrl left/right on mac, ctrl+win left/right on windows)
+[x] windows base layer 
     with inverted left ctrl and lgui keys
 
 
@@ -16,14 +16,14 @@ function layer :
 
 
 numpad layer :
-[X] numpad on right side
-[X] brackets on left side
-[X] double tap toggle
+[x] numpad on right side
+[x] brackets on left side
+[x] double tap toggle
 
 nav layer :
-[X] nav on right side
-[X] one shot mods on left side
-    [X] invert one shot mods CTRL/GUI depending on base layer
+[x] nav on right side
+[x] one shot mods on left side
+    [x] invert one shot mods CTRL/GUI depending on base layer
 [x] alt-tab or cmd-tab macro depending on base layer
 [x] email adresses
 [ ] one tap layer mod?
@@ -32,6 +32,12 @@ nav layer :
     [x] left ctrl+down right ctrl+shift+up ctrl+D
 
 french layer:
-[X] accented chars, some greek and mathematical signs, disposition inspired by qwerty-fry
+[x] accented chars, some greek and mathematical signs, disposition inspired by qwerty-fry
     needs on MACOS "unicode hex input" as keyboard preference
     needs Wincompose on windows. 
+
+To include the feature at compile time, include the flag `IS_YANNICK` like so:
+
+```
+make xd75:yannick:dfu EXTRAFLAGS=-DIS_YANNICK
+```
