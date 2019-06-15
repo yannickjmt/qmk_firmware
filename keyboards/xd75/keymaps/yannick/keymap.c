@@ -28,12 +28,8 @@
 // for PREVWIN and NEXTWIN macro
 bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
-
-// for navigation between desktop macros
 uint16_t l_timer;
 uint16_t r_timer;
-
-#define MACRO_TAP 140
 
 // Layer shorthand
 #define _MAC 0
@@ -43,9 +39,6 @@ uint16_t r_timer;
 #define _NAV 4
 #define _FR 5
 
-// tap FUNCT : caps lock KC_CAPS, hold : FUNCTION layer
-// annoying bug with caps lock activated too often
-// #define FN_CAPS LT(_FN, KC_CAPS)
 #define FN_CAPS MO(_FN)
 
 // tap RSHIFT : ;:, hold : Rshift
@@ -162,10 +155,6 @@ void eeconfig_init_user(void) {
 enum custom_keycodes {
   NEXTWIN = SAFE_RANGE,
   PREVWIN,
-  M_NDESK,
-  M_PDESK,
-  W_NDESK,
-  W_PDESK,
   N_CTRL,
   N_GUI,
   N_APP,
@@ -180,6 +169,38 @@ enum custom_keycodes {
   CLEARK
 
 };
+
+#define M_PDESK TD(MAC_PREVIOUS_DESKTOP)
+#define M_NDESK TD(MAC_NEXT_DESKTOP)
+#define W_PDESK TD(WIN_PREVIOUS_DESKTOP)
+#define W_NDESK TD(WIN_NEXT_DESKTOP)
+
+// tapdance keycodes
+enum td_keycodes {
+  MAC_PREVIOUS_DESKTOP,
+  MAC_NEXT_DESKTOP,
+  WIN_PREVIOUS_DESKTOP,
+  WIN_NEXT_DESKTOP
+};
+
+// tapdance states
+typedef enum {
+  SINGLE_TAP,
+  SINGLE_HOLD,
+  DOUBLE_TAP,
+  TRIPLE_TAP
+} td_state_t;
+
+// global instance of the tapdance state type
+static td_state_t td_state;
+
+// // function declaration
+// int cur_dance (qk_tap_dance_state_t *state);
+
+// void fnmaj_finished (qk_tap_dance_state_t *state, void *user_data);
+// void fnmaj_reset (qk_tap_dance_state_t *state, void *user_data);
+
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -223,8 +244,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_MINS, KC_GRV,  KC_EQL,  KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC,
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LBRC, KC_BSLS, KC_RBRC, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_DEL,
     FN_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_HOME, KC_DEL,  KC_PGUP, KC_H,    KC_J,    KC_K,    KC_L,    KC_QUOT, KC_ENT,
-    W_PDESK, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_END,  KC_UP,   KC_PGDN, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SHFT_COL,
-    KC_LGUI, KC_LCTL, KC_LALT, KC_SPC,  KC_ENT,  NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , N_APP,   KC_RALT, W_NDESK
+    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_END,  KC_UP,   KC_PGDN, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SHFT_COL,
+    W_PDESK, KC_LCTL, KC_LALT, KC_SPC,  KC_ENT,  NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , N_APP,   KC_RALT, W_NDESK
   ),
 
 /* FUNCTION
@@ -377,62 +398,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         register_code16(S(KC_TAB));
       } else {
         unregister_code16(S(KC_TAB));
-      }
-      break;
-    case M_PDESK: // mod tap for mac : CTRL or previous desktop (CTRL+LEFT)
-      if (record->event.pressed) {
-        // Activate LCTRL
-        l_timer = timer_read();
-        SEND_STRING(SS_DOWN(X_LCTRL));
-      } else {
-        // Deactivate LCTRL
-        SEND_STRING(SS_UP(X_LCTRL));
-        // If the action was a tap
-        if (timer_elapsed(l_timer) < MACRO_TAP) {
-          SEND_STRING(SS_LCTRL(SS_TAP(X_LEFT)));
-        }
-      }
-      break;
-    case M_NDESK: // mod tap for mac : CMD or next desktop (CTRL+RIGHT)
-      if (record->event.pressed) {
-        // Activate RGUI
-        r_timer = timer_read();
-        SEND_STRING(SS_DOWN(X_RGUI));
-      } else {
-        // Deactivate RGUI
-        SEND_STRING(SS_UP(X_RGUI));
-        // If the action was a tap
-        if (timer_elapsed(r_timer) < MACRO_TAP) {
-          SEND_STRING(SS_LCTRL(SS_TAP(X_RIGHT)));
-        }
-      }
-      break;
-    case W_PDESK: // mod tap for win : SHFT or previous desktop (CTRL+WIN+LEFT)
-      if (record->event.pressed) {
-        // Activate LGUI
-        l_timer = timer_read();
-        SEND_STRING(SS_DOWN(X_LSHIFT));
-      } else {
-        // Deactivate LGUI
-        SEND_STRING(SS_UP(X_LSHIFT));
-        // If the action was a tap
-        if (timer_elapsed(l_timer) < MACRO_TAP) {
-          SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_LEFT))));
-        }
-      }
-      break;
-    case W_NDESK: // mod tap for win : CTRL or next desktop (CTRL+WIN+RIGHT)
-      if (record->event.pressed) {
-        // Activate RCTRL
-        r_timer = timer_read();
-        SEND_STRING(SS_DOWN(X_RCTRL));
-      } else {
-        // Deactivate RCTRL
-        SEND_STRING(SS_UP(X_RCTRL));
-        // If the action was a tap
-        if (timer_elapsed(r_timer) < MACRO_TAP) {
-          SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_RIGHT))));
-        }
       }
       break;
     case N_CTRL:
@@ -613,7 +578,6 @@ uint32_t layer_state_set_user(uint32_t state) {
   return state;
 }
 
-
 void matrix_init_user(void) {
     rgblight_enable();
     rgblight_sethsv(0,255,255);
@@ -639,3 +603,147 @@ void matrix_scan_user(void) {
 void led_set_user(uint8_t usb_led) {
 
 }
+
+// determine the tapdance state to return
+int cur_dance (qk_tap_dance_state_t *state) {
+  if (state->count == 1) {
+    if (state->interrupted || !state->pressed) { return SINGLE_TAP; }
+    else { return SINGLE_HOLD; }
+  }
+  if (state->count == 2) { return DOUBLE_TAP; }
+  else { return TRIPLE_TAP; }
+}
+
+// handle the possible states for each tapdance keycode you define:
+
+void mac_prevdesk_finished (qk_tap_dance_state_t *state, void *user_data) {
+  td_state = cur_dance(state);
+  switch (td_state) {
+    case SINGLE_TAP:
+      set_oneshot_mods(MOD_LCTL);
+      break;
+    case SINGLE_HOLD:
+      register_mods(MOD_BIT(KC_LCTL));
+      break;
+    case DOUBLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_TAP(X_LEFT)));
+      break;
+    case TRIPLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_TAP(X_LEFT)));
+      _delay_ms(20);
+      SEND_STRING(SS_LCTRL(SS_TAP(X_LEFT)));
+  }
+}
+
+void mac_prevdesk_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (td_state) {
+    case SINGLE_TAP:
+     clear_oneshot_mods();
+     break;
+    case SINGLE_HOLD:
+      unregister_mods(MOD_BIT(KC_LCTL));
+    default:
+      break;
+  }
+}
+
+void mac_nextdesk_finished (qk_tap_dance_state_t *state, void *user_data) {
+  td_state = cur_dance(state);
+  switch (td_state) {
+    case SINGLE_TAP:
+      set_oneshot_mods(MOD_LGUI);
+      break;
+    case SINGLE_HOLD:
+      register_mods(MOD_BIT(KC_RGUI));
+      break;
+    case DOUBLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_TAP(X_RIGHT)));
+      break;
+    case TRIPLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_TAP(X_RIGHT)));
+      _delay_ms(20);
+      SEND_STRING(SS_LCTRL(SS_TAP(X_RIGHT)));
+  }
+}
+
+void mac_nextdesk_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (td_state) {
+    case SINGLE_TAP:
+     clear_oneshot_mods();
+     break;
+    case SINGLE_HOLD:
+      unregister_mods(MOD_BIT(KC_RGUI));
+    default:
+      break;
+  }
+}
+
+void win_prevdesk_finished (qk_tap_dance_state_t *state, void *user_data) {
+  td_state = cur_dance(state);
+  switch (td_state) {
+    case SINGLE_TAP:
+      set_oneshot_mods(MOD_LGUI);
+      break;
+    case SINGLE_HOLD:
+      register_mods(MOD_BIT(KC_LGUI));
+      break;
+    case DOUBLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_LEFT))));
+      break;
+    case TRIPLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_LEFT))));
+      _delay_ms(20);
+      SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_LEFT))));
+  }
+}
+
+void win_prevdesk_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (td_state) {
+    case SINGLE_TAP:
+     clear_oneshot_mods();
+     break;
+    case SINGLE_HOLD:
+      unregister_mods(MOD_BIT(KC_LGUI));
+    default:
+      break;
+  }
+}
+
+void win_nextdesk_finished (qk_tap_dance_state_t *state, void *user_data) {
+  td_state = cur_dance(state);
+  switch (td_state) {
+    case SINGLE_TAP:
+      set_oneshot_mods(MOD_RCTL);
+      break;
+    case SINGLE_HOLD:
+      register_mods(MOD_BIT(KC_RCTL));
+      break;
+    case DOUBLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_RIGHT))));
+      break;
+    case TRIPLE_TAP:
+      SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_RIGHT))));
+      _delay_ms(20);
+      SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_RIGHT))));
+  }
+}
+
+void win_nextdesk_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (td_state) {
+    case SINGLE_TAP:
+     clear_oneshot_mods();
+     break;
+    case SINGLE_HOLD:
+      unregister_mods(MOD_BIT(KC_RCTL));
+    default:
+      break;
+  }
+}
+
+// define `ACTION_TAP_DANCE_FN_ADVANCED()` for each tapdance keycode, passing in `finished` and `reset` functions
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [MAC_PREVIOUS_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mac_prevdesk_finished, mac_prevdesk_reset),
+  [MAC_NEXT_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mac_nextdesk_finished, mac_nextdesk_reset),
+  [WIN_PREVIOUS_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, win_prevdesk_finished, win_prevdesk_reset),
+  [WIN_NEXT_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, win_nextdesk_finished, win_nextdesk_reset),
+};

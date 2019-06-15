@@ -3,7 +3,11 @@
 Mac and Windows base layers
 [x] hold caps lock => function layer
 [x] tap right shift => ;
-[x] tap on leftmost and buttons to change workspace (ctrl left/right on mac, ctrl+win left/right on windows)
+[x] tap dance on leftmost and rightmost bottom row buttons to change workspace (ctrl left/right on mac, ctrl+win left/right on windows)
+    single tap = mod tap
+    hold = mod
+    double tap = next/prev desktop
+    triple tap = move to desktop after or before next/prev desktop
 [x] windows base layer 
     with inverted left ctrl and lgui keys
 
@@ -36,7 +40,8 @@ french layer:
     needs on MACOS "unicode hex input" as keyboard preference
     needs Wincompose on windows. 
 
-To include the feature at compile time, include the flag `IS_YANNICK` like so:
+secret.h is in git/info/exclude
+To include the emails at compile time, add them in secret.h and include the flag `IS_YANNICK` in the cmd:
 
 ```
 make xd75:yannick:dfu EXTRAFLAGS=-DIS_YANNICK
