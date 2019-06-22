@@ -19,7 +19,7 @@
 
 #define TAPPING_TOGGLE 2
 // Key must be released within this many milliseconds to be considered a tap
-#define TAPPING_TERM 200
+#define TAPPING_TERM 250
 
 // - after 1.5s, turn off one-shot keys
 #define ONESHOT_TIMEOUT 1500
