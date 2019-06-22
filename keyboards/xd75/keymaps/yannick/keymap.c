@@ -28,8 +28,6 @@
 // for PREVWIN and NEXTWIN macro
 bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
-uint16_t l_timer;
-uint16_t r_timer;
 
 // Layer shorthand
 #define _MAC 0
@@ -46,8 +44,6 @@ uint16_t r_timer;
 #define SHFT_COL RSFT_T(KC_SCLN)
 
 #define NUMLAY TT(_NUM)
-// #define NAVLAY LT(_NAV, KC_BSPC)
-// #define NAVLAY MO(_NAV)
 #define FRLAY MO(_FR)
 
 // nav layer
@@ -159,8 +155,6 @@ enum custom_keycodes {
   N_CTRL,
   N_GUI,
   OS_GUI,
-//   OS_SHFT,
-//   OS_ALT,
   OS_CTRL,
   N_APP,
   N_UNDO,
@@ -200,14 +194,6 @@ typedef enum {
 
 // global instance of the tapdance state type
 static td_state_t td_state;
-
-// // function declaration
-// int cur_dance (qk_tap_dance_state_t *state);
-
-// void fnmaj_finished (qk_tap_dance_state_t *state, void *user_data);
-// void fnmaj_reset (qk_tap_dance_state_t *state, void *user_data);
-
-
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -299,28 +285,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, _______,TG(_NUM), KC_0   , KC_0   , KC_DOT , KC_SPC , _______
  ),
 
-/* EMPTY
- * .--------------------------------------------------------------------------------------------------------------------------------------.
- * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
- * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
- * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
- * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
- * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
- * '--------------------------------------------------------------------------------------------------------------------------------------'
- */
-
-//   [_EM] = LAYOUT_ortho_5x15(
-//     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
-//   ),
-
 /* NAV
  * .--------------------------------------------------------------------------------------------------------------------------------------.
  * |        |        | MAIL   |MAILPRO |        |        |        |        |        |        |        |        |        |        |        |
@@ -342,7 +306,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
-// one shot nav layer
+// same layer with one shot mods
   [_NAV_OS] = LAYOUT_ortho_5x15(
     _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, PREVWIN, NEXTWIN, N_APP  , XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
@@ -591,20 +555,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-// layer_state_t default_layer_state_set_user(layer_state_t state) {
-//   switch (biton32(default_layer_state)) {
-//   case _MAC:
-//     set_unicode_input_mode(UC_OSX);
-//     rgblight_sethsv_noeeprom_red();
-//     break;
-//   case _WIN:
-//     set_unicode_input_mode(UC_WINC);
-//     rgblight_sethsv_noeeprom_blue();
-//     break;
-//   }
-//   return state;
-// }
-
 uint32_t layer_state_set_user(uint32_t state) {
   switch (biton32(state)) {
   case _FN:
@@ -615,6 +565,9 @@ uint32_t layer_state_set_user(uint32_t state) {
     break;
   case _NAV:
     rgblight_sethsv_noeeprom_springgreen();
+    break;
+  case _NAV_OS:
+    rgblight_sethsv_noeeprom_turquoise();
     break;
   case _FR:
     rgblight_sethsv_noeeprom_white();
@@ -664,14 +617,12 @@ void led_set_user(uint8_t usb_led) {
 // determine the tapdance state to return
 int cur_dance (qk_tap_dance_state_t *state) {
   if (state->count == 1) {
-    if (state->interrupted || !state->pressed) { return SINGLE_TAP; }
+    if (!state->pressed) { return SINGLE_TAP; }
     else { return SINGLE_HOLD; }
   }
   if (state->count == 2) { return DOUBLE_TAP; }
   else { return TRIPLE_TAP; }
 }
-
-// handle the possible states for each tapdance keycode you define:
 
 void mac_prevdesk_finished (qk_tap_dance_state_t *state, void *user_data) {
   td_state = cur_dance(state);
@@ -803,11 +754,6 @@ void nav_on (qk_tap_dance_state_t *state, void *user_data) {
   }
 }
 
-// void nav_on (qk_tap_dance_state_t *state, void *user_data) {
-//   set_oneshot_layer(_NAV_OS, ONESHOT_START);
-//   clear_oneshot_layer_state(ONESHOT_PRESSED);
-// }
-
 void nav_finished (qk_tap_dance_state_t *state, void *user_data) {
   td_state = cur_dance(state);
   switch (td_state) {
@@ -829,7 +775,7 @@ void nav_finished (qk_tap_dance_state_t *state, void *user_data) {
 void nav_reset (qk_tap_dance_state_t *state, void *user_data) {
   switch (td_state) {
     case SINGLE_TAP:
-     break;
+      break;
     case SINGLE_HOLD:
       layer_off(_NAV);
     default:
@@ -843,6 +789,5 @@ qk_tap_dance_action_t tap_dance_actions[] = {
   [MAC_NEXT_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mac_nextdesk_finished, mac_nextdesk_reset),
   [WIN_PREVIOUS_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, win_prevdesk_finished, win_prevdesk_reset),
   [WIN_NEXT_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, win_nextdesk_finished, win_nextdesk_reset),
-//   [NAV_LAYER] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, nav_finished, nav_reset, 10)
   [NAV_LAYER] = ACTION_TAP_DANCE_FN_ADVANCED(nav_on, nav_finished, nav_reset)
 };
