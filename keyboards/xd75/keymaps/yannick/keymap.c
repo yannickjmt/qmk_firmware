@@ -54,6 +54,13 @@ uint16_t alt_tab_timer = 0;
 #define NEXTTAB LCTL(KC_TAB)
 #define PREVTAB LSFT(LCTL(KC_TAB))
 
+// dynamic macro
+#define DYNREC1 DYN_REC_START1
+#define DYNREC2 DYN_REC_START2
+#define DYNGO1 DYN_MACRO_PLAY1
+#define DYNGO2 DYN_MACRO_PLAY2
+#define DYNSTP DYN_REC_STOP
+
 // French chars
 enum unicode_names {
   E_AIG,
@@ -165,9 +172,11 @@ enum custom_keycodes {
   MAILPRO,
   XCEL_V,
   XCEL_D,
-  CLEARK
-
+  CLEARK,
+  DYNAMIC_MACRO_RANGE,
 };
+
+#include "dynamic_macro.h"
 
 #define M_PDESK TD(MAC_PREVIOUS_DESKTOP)
 #define M_NDESK TD(MAC_NEXT_DESKTOP)
@@ -245,22 +254,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * .--------------------------------------------------------------------------------------------------------------------------------------.
  * | XXXXXXX| F1     | F2     | F3     | F4     | F5     | F11    | F12    | XXXXXXX| F6     | F7     | F8     | F9     | F10    | RESET  |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * | XXXXXXX| !      | @      | #      | $      | %      | XXXXXXX| XXXXXXX| XXXXXXX| ^      | &      | *      | (      | )      | windows|
+ * | XXXXXXX| !      | @      | #      | $      | %      | DYNREC1| DYNSTP | DYNREC2| ^      | &      | *      | (      | )      | windows|
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * | XXXXXXX| CAPSLOC| XXXXXXX| XXXXXXX| RGB SD | RGB SI | XXXXXXX| CLEARK | XXXXXXX| XXXXXXX| XXXXXXX| XXXXXXX| XXXXXXX| XXXXXXX| mac    |
+ * | XXXXXXX| CAPSLOC| XXXXXXX| XXXXXXX| RGB SD | RGB SI | DYNGO1 | CLEARK | DYNGO2 | XXXXXXX| XXXXXXX| XXXXXXX| XXXXXXX| XXXXXXX| mac    |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        | XXXXXXX| RGB HD | RGB HI | RGB VD | RGB VI | XXXXXXX|        | XXXXXXX| PR SCR | SCR LK | PAUSE  | XXXXXXX| XXXXXXX|        |
+ * |        | XXXXXXX| RGB HD | RGB HI | RGB VD | RGB VI | MUTE   | VOL UP | XXXXXXX| PR SCR | SCR LK | PAUSE  | XXXXXXX| XXXXXXX|        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |        | RGB TG | RGB RMD| RGB MD |        |        |        |        |        |        |        |        |        |
+ * |        |        |        | RGB TG | RGB RMD| RGB MD |        | VOL DN |        |        |        |        |        |        |        |
  * '--------------------------------------------------------------------------------------------------------------------------------------'
  */
 
   [_FN] = LAYOUT_ortho_5x15( /* FUNCTION */
     XXXXXXX, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F11 , KC_F12 , XXXXXXX, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  RESET,
-    XXXXXXX, KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, XXXXXXX, XXXXXXX, XXXXXXX, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, DF(_WIN),
-    _______, KC_CAPS, XXXXXXX, XXXXXXX, RGB_SAD, RGB_SAI, XXXXXXX, CLEARK , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DF(_MAC),
-    _______, XXXXXXX, RGB_HUD, RGB_HUI, RGB_VAD, RGB_VAI, XXXXXXX, _______, XXXXXXX, KC_PSCR, KC_SLCK, KC_PAUS, XXXXXXX, XXXXXXX, _______,
-    _______, _______, _______, RGB_TOG, RGB_RMOD,RGB_MOD, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    XXXXXXX, KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, DYNREC1, DYNSTP , DYNREC2, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, DF(_WIN),
+    _______, KC_CAPS, XXXXXXX, XXXXXXX, RGB_SAD, RGB_SAI, DYNGO1 , CLEARK , DYNGO2 , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DF(_MAC),
+    _______, XXXXXXX, RGB_HUD, RGB_HUI, RGB_VAD, RGB_VAI, KC_MUTE, KC_VOLU, XXXXXXX, KC_PSCR, KC_SLCK, KC_PAUS, XXXXXXX, XXXXXXX, _______,
+    _______, _______, _______, RGB_TOG, RGB_RMOD,RGB_MOD, _______, KC_VOLD, _______, _______, _______, _______, _______, _______, _______
   ),
 
 /* NUMPAD
@@ -273,7 +282,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * |        |        | \      | {      | }      | |      |        |        |        |        | 1      | 2      | 3      | SPC    |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |        |        |        |        |        |        |        | toggle | 0      | 0      | 0      | SPC    |        |
+ * |        |        |        |        |        |        |        |        |        | toggle | 0      | 0      | .      | SPC    |        |
  * '--------------------------------------------------------------------------------------------------------------------------------------'
  */
 
@@ -293,7 +302,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * |        |Ctrl/Win|  Shift |   Alt  |Cmd/Ctrl|        |        | CLEARK |        |  PgDown|  Left  |  Down  |  Right |ScrollDn|        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        | Ctrl Z | Crtl X | Ctrl C | Ctrl V | EXCEL  |        |        |        |Prev win|Next win|Prev Tab|Next tab|        |        |
+ * |        | Ctrl Z | Crtl X | Ctrl C | Ctrl V | EXCEL  |        |        |        |Prev win|Next win|Prev Tab|Next tab|Ins     |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
  * '--------------------------------------------------------------------------------------------------------------------------------------'
@@ -303,7 +312,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, PREVWIN, NEXTWIN, N_APP  , XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
     _______, N_GUI  , KC_LSFT, KC_LALT, N_CTRL , _______, _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
-    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, _______, _______,
+    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, KC_INS , _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
 // same layer with one shot mods
@@ -311,7 +320,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, PREVWIN, NEXTWIN, N_APP  , XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
     _______, OS_GUI , OS_SHFT, OS_ALT , OS_CTRL, _______, _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
-    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, _______, _______,
+    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, KC_INS , _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
 
@@ -340,6 +349,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (!process_record_dynamic_macro(keycode, record)) {
+    return false;
+  }
+
   switch (keycode) {
     case NEXTWIN: // CMD+TAB or ALT+TAB
       if (record->event.pressed) {
@@ -555,6 +568,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+// led control
 uint32_t layer_state_set_user(uint32_t state) {
   switch (biton32(state)) {
   case _FN:
@@ -567,7 +581,7 @@ uint32_t layer_state_set_user(uint32_t state) {
     rgblight_sethsv_noeeprom_springgreen();
     break;
   case _NAV_OS:
-    rgblight_sethsv_noeeprom_turquoise();
+    rgblight_sethsv_noeeprom_cyan();
     break;
   case _FR:
     rgblight_sethsv_noeeprom_white();
@@ -614,7 +628,7 @@ void led_set_user(uint8_t usb_led) {
 
 }
 
-// determine the tapdance state to return
+// tap dance
 int cur_dance (qk_tap_dance_state_t *state) {
   if (state->count == 1) {
     if (!state->pressed) { return SINGLE_TAP; }
@@ -789,5 +803,5 @@ qk_tap_dance_action_t tap_dance_actions[] = {
   [MAC_NEXT_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mac_nextdesk_finished, mac_nextdesk_reset),
   [WIN_PREVIOUS_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, win_prevdesk_finished, win_prevdesk_reset),
   [WIN_NEXT_DESKTOP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, win_nextdesk_finished, win_nextdesk_reset),
-  [NAV_LAYER] = ACTION_TAP_DANCE_FN_ADVANCED(nav_on, nav_finished, nav_reset)
+  [NAV_LAYER] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(nav_on, nav_finished, nav_reset, 150)
 };
