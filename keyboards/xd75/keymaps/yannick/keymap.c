@@ -173,6 +173,8 @@ enum custom_keycodes {
   XCEL_V,
   XCEL_D,
   CLEARK,
+  BASEMAC,
+  BASEWIN,
   DYNAMIC_MACRO_RANGE,
 };
 
@@ -266,8 +268,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_FN] = LAYOUT_ortho_5x15( /* FUNCTION */
     XXXXXXX, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F11 , KC_F12 , XXXXXXX, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  RESET,
-    XXXXXXX, KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, DYNREC1, DYNSTP , DYNREC2, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, DF(_WIN),
-    _______, KC_CAPS, XXXXXXX, XXXXXXX, RGB_SAD, RGB_SAI, DYNGO1 , CLEARK , DYNGO2 , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DF(_MAC),
+    XXXXXXX, KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, DYNREC1, DYNSTP , DYNREC2, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, BASEWIN,
+    _______, KC_CAPS, XXXXXXX, XXXXXXX, RGB_SAD, RGB_SAI, DYNGO1 , CLEARK , DYNGO2 , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, BASEMAC,
     _______, XXXXXXX, RGB_HUD, RGB_HUI, RGB_VAD, RGB_VAI, KC_MUTE, KC_VOLU, XXXXXXX, KC_PSCR, KC_SLCK, KC_PAUS, XXXXXXX, XXXXXXX, _______,
     _______, _______, _______, RGB_TOG, RGB_RMOD,RGB_MOD, _______, KC_VOLD, _______, _______, _______, _______, _______, _______, _______
   ),
@@ -563,7 +565,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         clear_keyboard();
       }
-    break;
+      break;
+    case BASEMAC:
+      if (record->event.pressed) {
+        default_layer_set(1UL<<_MAC);
+        layer_move(_MAC);
+        set_unicode_input_mode(UC_OSX);
+      }
+      return false;
+      break;
+    case BASEWIN:
+      if (record->event.pressed) {
+        default_layer_set(1UL<<_WIN);
+        layer_move(_WIN);
+        set_unicode_input_mode(UC_WINC);
+      }
+      return false;
+      break;
   }
   return true;
 }
@@ -590,11 +608,9 @@ uint32_t layer_state_set_user(uint32_t state) {
     switch (biton32(default_layer_state)) {
       case _MAC:
         rgblight_sethsv_noeeprom_red();
-        set_unicode_input_mode(UC_OSX);
         break;
       case _WIN:
         rgblight_sethsv_noeeprom_blue();
-        set_unicode_input_mode(UC_WINC);
         break;
     }
     break;
