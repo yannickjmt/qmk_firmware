@@ -1,4 +1,4 @@
-/* Copyright 2017 Wunder
+/* Copyright 2019 Yannick Jamet
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,6 @@ uint16_t alt_tab_timer = 0;
 #define OS_ALT OSM(MOD_LALT)
 // CTRL and WGUI defined in macros as they change according to base layer
 
-#define NEXTTAB LCTL(KC_TAB)
-#define PREVTAB LSFT(LCTL(KC_TAB))
 
 // dynamic macro
 #define DYNREC1 DYN_REC_START1
@@ -159,6 +157,8 @@ void eeconfig_init_user(void) {
 enum custom_keycodes {
   NEXTWIN = SAFE_RANGE,
   PREVWIN,
+  NEXTTAB,
+  PREVTAB,
   N_CTRL,
   N_GUI,
   OS_GUI,
@@ -300,9 +300,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * .--------------------------------------------------------------------------------------------------------------------------------------.
  * |        |        | MAIL   |MAILPRO |        |        |        |        |        |        |        |        |        |        |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |Prev win|Next win| APP    | EXCEL  |        |        |        |  PgUp  |  Home  |   Up   |   End  |ScrollUp|        |
+ * |        |Prev win|Next win|Prev tab|Next tab| EXCEL  |        |        |        |  PgUp  |  Home  |   Up   |   End  |ScrollUp|        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |Ctrl/Win|  Shift |   Alt  |Cmd/Ctrl|        |        | CLEARK |        |  PgDown|  Left  |  Down  |  Right |ScrollDn|        |
+ * |        |Ctrl/Win|  Shift |   Alt  |Cmd/Ctrl|  APP   |        | CLEARK |        |  PgDown|  Left  |  Down  |  Right |ScrollDn|        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * |        | Ctrl Z | Crtl X | Ctrl C | Ctrl V | EXCEL  |        |        |        |Prev win|Next win|Prev Tab|Next tab|Ins     |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
@@ -312,16 +312,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_NAV] = LAYOUT_ortho_5x15(
     _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, PREVWIN, NEXTWIN, N_APP  , XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
-    _______, N_GUI  , KC_LSFT, KC_LALT, N_CTRL , _______, _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
+    _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
+    _______, N_GUI  , KC_LSFT, KC_LALT, N_CTRL , N_APP  , _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
     _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, KC_INS , _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
 // same layer with one shot mods
   [_NAV_OS] = LAYOUT_ortho_5x15(
     _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, PREVWIN, NEXTWIN, N_APP  , XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
-    _______, OS_GUI , OS_SHFT, OS_ALT , OS_CTRL, _______, _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
+    _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
+    _______, OS_GUI , OS_SHFT, OS_ALT , OS_CTRL, N_APP , _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
     _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, KC_INS , _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
@@ -392,6 +392,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         register_code16(S(KC_TAB));
       } else {
         unregister_code16(S(KC_TAB));
+      }
+      break;
+    case NEXTTAB: // CTRL+TAB or CTRL+PGUP
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          SEND_STRING(SS_DOWN(X_LCTRL)SS_TAP(X_TAB)SS_UP(X_LCTRL));
+          break;
+        case _WIN:
+          SEND_STRING(SS_DOWN(X_LCTRL)SS_TAP(X_PGUP)SS_UP(X_LCTRL));
+          break;
+        }
+      }
+      break;
+    case PREVTAB: // CTRL+SHIFT+TAB or CTRL+PGDOWN
+      if (record->event.pressed) {
+        switch (biton32(default_layer_state)) {
+        case _MAC:
+          SEND_STRING(SS_DOWN(X_LCTRL)SS_DOWN(X_LSHIFT)SS_TAP(X_TAB)SS_UP(X_LSHIFT)SS_UP(X_LCTRL));
+          break;
+        case _WIN:
+          SEND_STRING(SS_DOWN(X_LCTRL)SS_TAP(X_PGDOWN)SS_UP(X_LCTRL));
+          break;
+        }
       }
       break;
     case OS_CTRL:
