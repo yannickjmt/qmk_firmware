@@ -1,10 +1,9 @@
 ### XD75 keymap by Yannick
 
 #### Mac and Windows base layers
-* [x] windows or mac base layer with inverted left ctrl and lgui keys
 * [x] hold caps lock => function layer
 * [x] tap right shift => ;
-* [x] tap dance on leftmost and rightmost bottom row buttons to change workspace (ctrl left/right on mac, ctrl+win left/right on windows)
+* [x] tap dance on leftmost and rightmost bottom row buttons to change workspace
   - single tap = mod tap
   - hold = mod
   - double tap = next/prev desktop
@@ -19,7 +18,6 @@
 * [x] dfu
 * [x] dynamic macros
 
-
 #### numpad layer :
 * [x] numpad on right side
 * [x] brackets on left side
@@ -30,16 +28,15 @@
 * [x] hold layer => mods behave normally
 * [x] nav on right side
 * [x] invert mods CTRL/GUI depending on base layer
-* [x] alt-tab or cmd-tab macro depending on base layer
+* [x] alt-tab macro
 * [x] email adresses
-* [x] Excel shortcut on macros (windows only)
+* [x] Excel shortcut on macros
     * [x] ctrl+alt+V V
     * [x] left ctrl+down right ctrl+shift+up ctrl+D
 
 #### french layer:
 * [x] accented chars, some greek and mathematical signs, disposition inspired by qwerty-fry
-  - needs on MACOS "unicode hex input" as keyboard preference
-  - needs Wincompose on windows which so far has performed very poorly (unreliables)
+  - needs Wincompose on windows
 
 #### emails
 secret.h is in git/info/exclude
