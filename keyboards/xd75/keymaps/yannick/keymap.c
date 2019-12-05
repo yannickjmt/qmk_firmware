@@ -37,11 +37,12 @@ uint16_t alt_tab_timer = 0;
 #define _NAV_OS 5
 #define _FR 6
 
-#define FN_CAPS MO(_FN)
+#define FN_CAPS LT(_FN, KC_TAB)
+#define FN_ENT LT(_FN, KC_ENT)
 
 // tap RSHIFT : ;:, hold : Rshift
 #define SHFT_COL RSFT_T(KC_SCLN)
-
+#define ALT_ENT MT(MOD_LALT, KC_ENT)
 #define NUMLAY TT(_NUM)
 #define FRLAY MO(_FR)
 
@@ -162,6 +163,8 @@ enum custom_keycodes {
   XCEL_V,
   XCEL_D,
   CLEARK,
+  PREVDSK,
+  NEXTDSK,
 };
 
 // #define M_PDESK TD(MAC_PREVIOUS_DESKTOP)
@@ -196,29 +199,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * .--------------------------------------------------------------------------------------------------------------------------------------.
  * | ESC    | 1      | 2      | 3      | 4      | 5      | -      | `      | =      | 6      | 7      | 8      | 9      | 0      | BACKSP |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+-----------------|
- * | TAB    | Q      | W      | E      | R      | T      | [      | \      | ]      | Y      | U      | I      | O      | P      | DEL    |
+ * | TAB    | Q      | W      | E      | R      | T      | PREVDSK| \      | NEXTDSK| Y      | U      | I      | O      | P      | DEL    |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+-----------------+--------|
- * | FN_CAPS| A      | S      | D      | F      | G      | HOME   | DEL    | PG UP  | H      | J      | K      | L      | '      | ENTER  |
+ * | FN_CAPS| A      | S      | D      | F      | G      | HOME   | DEL    | PG UP  | H      | J      | K      | L      | '      | FN_ENT |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------------------------+--------|
  * | LSHIFT | Z      | X      | C      | V      | B      | END    | UP     | PG DN  | N      | M      | ,      | .      | /      |SHFT_APO|
  * |--------+--------+--------+--------+--------+-----------------+--------+--------+--------+--------+-----------------+--------+--------|
- * | LGUI   | LALT   | SPACE  | ENTER  | LCTRL  | NAV    | LEFT   | DOWN   | RIGHT  | RAISE  | SPACE  | FRENCH | APP    | RALT   | RCTRL  |
+ * | LGUI   | LALT   | SPACE  | ALT/ENT| LCTRL  | NAV    | KC_DEL | DOWN   | KC_BSPC| NUM    | SPACE  | FRENCH | APP    | RALT   | RCTRL  |
  * '--------------------------------------------------------------------------------------------------------------------------------------'
  */
 
   [_WIN] = LAYOUT_ortho_5x15( /* QWERTY WINDOWS */
     KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_MINS, KC_GRV,  KC_EQL,  KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC,
-    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LBRC, KC_BSLS, KC_RBRC, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_DEL,
-    FN_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_HOME, KC_DEL,  KC_PGUP, KC_H,    KC_J,    KC_K,    KC_L,    KC_QUOT, KC_ENT,
+    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    PREVDSK, KC_BSLS, NEXTDSK, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_DEL,
+    FN_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_HOME, KC_DEL,  KC_PGUP, KC_H,    KC_J,    KC_K,    KC_L,    KC_QUOT, FN_ENT,
     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_END,  KC_UP,   KC_PGDN, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SHFT_COL,
-    W_PDESK, KC_LALT, KC_SPC,  KC_ENT,  KC_LCTL, NAVLAY,  KC_LEFT, KC_DOWN, KC_RGHT, NUMLAY,  KC_SPC,  FRLAY  , KC_APP,   KC_RALT, W_NDESK
+    W_PDESK, KC_LALT, KC_SPC,  ALT_ENT, KC_LCTL, NAVLAY,  KC_DEL , KC_DOWN, KC_BSPC, NUMLAY,  KC_SPC,  FRLAY  , KC_APP,   KC_RALT, W_NDESK
   ),
 
 /* FUNCTION
  * .--------------------------------------------------------------------------------------------------------------------------------------.
  * | XXXXXXX| F1     | F2     | F3     | F4     | F5     | F11    | F12    | XXXXXXX| F6     | F7     | F8     | F9     | F10    | RESET  |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * | XXXXXXX| !      | @      | #      | $      | %      | DM_REC1| DM_RSTP| DM_REC2| ^      | &      | *      | (      | )      |        |
+ * | XXXXXXX| F1     | F2     | F3     | F4     | F5     | DM_REC1| DM_RSTP| DM_REC2| F6     | F7     | F8     | F9     | F10    |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * | XXXXXXX| CAPSLOC| XXXXXXX| XXXXXXX| RGB SD | RGB SI | DM_PLY1| CLEARK | DM_PLY1| XXXXXXX| XXXXXXX| XXXXXXX| XXXXXXX| XXXXXXX|        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
@@ -230,7 +233,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_FN] = LAYOUT_ortho_5x15( /* FUNCTION */
     XXXXXXX, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F11 , KC_F12 , XXXXXXX, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  RESET,
-    XXXXXXX, KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, DM_REC1, DM_RSTP, DM_REC2, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, _______,
+    XXXXXXX, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   DM_REC1, DM_RSTP, DM_REC2, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  _______,
     _______, KC_CAPS, XXXXXXX, XXXXXXX, RGB_SAD, RGB_SAI, DM_PLY1, CLEARK , DM_PLY2, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
     _______, XXXXXXX, RGB_HUD, RGB_HUI, RGB_VAD, RGB_VAI, KC_MUTE, KC_VOLU, KC_MPLY, KC_PSCR, KC_SLCK, KC_PAUS, XXXXXXX, XXXXXXX, _______,
     _______, _______, _______, RGB_TOG, RGB_RMOD,RGB_MOD, KC_MPRV, KC_VOLD, KC_MNXT, _______, _______, _______, _______, _______, _______
@@ -238,24 +241,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* NUMPAD
  * .--------------------------------------------------------------------------------------------------------------------------------------.
- * |        |        |        |        |        |        |        |        |        |        | =      | /      | *      | -      |        |
+ * |        |        |        |        |        |        |        |        |        |        |        |        |        | /      |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        | `      | +      | [      | ]      | =      |        |        |        |        | 7      | 8      | 9      | +      |        |
+ * | `      | !      | +      | [      | ]      | =      |        |        |        | $      | 7      | 8      | 9      | *      |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        | ~      | _      | (      | )      | -      |        |        |        |        | 4      | 5      | 6      | +      |        |
+ * | ~      | @      | _      | (      | )      | -      |        |        |        | %      | 4      | 5      | 6      | -      |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        | \      | {      | }      | |      |        |        |        |        | 1      | 2      | 3      | SPC    |        |
+ * | #      | \      | &      | {      | }      | |      |        |        |        | ^      | 1      | 2      | 3      | +      |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        |        |        |        |        |        |        |        |        | toggle | 0      | 0      | .      | SPC    |        |
+ * |        |        |        |        |        |        |        |        |        | toggle | 0      | .      | SPC    | SPC    |        |
  * '--------------------------------------------------------------------------------------------------------------------------------------'
  */
 
   [_NUM] = LAYOUT_ortho_5x15(
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_EQL , KC_SLSH, KC_ASTR, KC_MINS, _______,
-    _______, KC_GRV,S(KC_EQL), KC_LBRC, KC_RBRC, KC_EQL , _______, _______, _______, _______, KC_7   , KC_8   , KC_9   , KC_PLUS, _______,
-    _______,S(KC_GRV),S(KC_MINS),S(KC_9),S(KC_0),KC_MINS, _______, _______, _______, _______, KC_4   , KC_5   , KC_6   , KC_PLUS, _______,
-    _______,_______,KC_BSLS,S(KC_LBRC),S(KC_RBRC),S(KC_BSLS),_______,_______,_______,_______, KC_1   , KC_2   , KC_3   , KC_SPC , _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______,TG(_NUM), KC_0   , KC_0   , KC_DOT , KC_SPC , _______
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_SLSH, _______,
+    KC_GRV, KC_EXLM,S(KC_EQL), KC_LBRC, KC_RBRC, KC_EQL , _______, _______, _______, KC_DLR , KC_7   , KC_8   , KC_9   , KC_ASTR, _______,
+    S(KC_GRV), KC_AT ,S(KC_MINS),S(KC_9),S(KC_0),KC_MINS, _______, _______, _______, KC_PERC, KC_4   , KC_5   , KC_6   , KC_MINS, _______,
+    KC_HASH,KC_BSLS,KC_AMPR,S(KC_LBRC),S(KC_RBRC),S(KC_BSLS),_______,_______,_______,KC_CIRC, KC_1   , KC_2   , KC_3   , KC_PLUS, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______,TG(_NUM), KC_0   , KC_DOT , KC_SPC , KC_SPC , _______
  ),
 
 /* NAV
@@ -266,7 +269,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * |        |Ctrl/Win|  Shift |   Alt  |Cmd/Ctrl|  APP   |        | CLEARK |        |  PgDown|  Left  |  Down  |  Right |ScrollDn|        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
- * |        | Ctrl Z | Crtl X | Ctrl C | Ctrl V | EXCEL  |        |        |        |        |        |        |        |Ins     |        |
+ * |        | Ctrl Z | Crtl X | Ctrl C | Ctrl V | EXCEL  |        |        |        |        | PREVDSK|        | NEXTDSK|Ins     |        |
  * |--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------|
  * |        |        |        |        |        |        |        |        |        |        |        |        |        |        |        |
  * '--------------------------------------------------------------------------------------------------------------------------------------'
@@ -276,7 +279,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, PREVTAB, NEXTTAB, PREVWIN, NEXTWIN, XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
     _______, KC_LGUI, KC_LSFT, KC_LALT, KC_LCTL, KC_APP , _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
-    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, _______, _______, _______, _______, KC_INS , _______,
+    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, _______, PREVDSK, _______, NEXTDSK, KC_INS , _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
 // same layer with one shot mods
@@ -284,7 +287,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, MAIL   , MAILPRO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, PREVTAB, NEXTTAB, PREVWIN, NEXTWIN, XCEL_D , _______, _______, _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_WH_U, _______,
     _______, OS_GUI , OS_SHFT, OS_ALT , OS_CTRL, KC_APP , _______, CLEARK , _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_WH_D, _______,
-    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, PREVWIN, NEXTWIN, PREVTAB, NEXTTAB, KC_INS , _______,
+    _______, N_UNDO , N_CUT  , N_COPY , N_PASTE, XCEL_V , _______, _______, _______, _______, PREVDSK, _______, NEXTDSK, KC_INS , _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
   ),
 
@@ -400,6 +403,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case CLEARK:
       if (record->event.pressed) {
         clear_keyboard();
+      }
+      break;
+    case PREVDSK:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_LEFT))));
+      }
+      break;
+    case NEXTDSK:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LCTRL(SS_LGUI(SS_TAP(X_RIGHT))));
       }
       break;
   }
