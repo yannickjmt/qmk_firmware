@@ -31,11 +31,11 @@ uint16_t alt_tab_timer = 0;
 
 // Layer shorthand
 #define _WIN 0
-#define _FN 2
-#define _NUM 3
-#define _NAV 4
-#define _NAV_OS 5
-#define _FR 6
+#define _FN 1
+#define _NUM 2
+#define _NAV 3
+#define _NAV_OS 4
+#define _FR 5
 
 #define FN_CAPS LT(_FN, KC_TAB)
 #define FN_ENT LT(_FN, KC_ENT)
